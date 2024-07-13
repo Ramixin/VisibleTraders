@@ -1,0 +1,4 @@
+accessWidener v2 named
+
+accessible class net/minecraft/client/gui/screens/inventory/MerchantScreen$TradeOfferButton
+accessible method net/minecraft/world/entity/npc/AbstractVillager updateTrades ()V

@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.ramgames.visibletraders.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "VillagerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

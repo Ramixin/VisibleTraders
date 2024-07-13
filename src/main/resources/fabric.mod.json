@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "visibletraders",
+  "version": "${version}",
+  "name": "Visible Traders",
+  "description": "A mod that allows the player to view locked villager trades",
+  "authors": [
+    "Ramixin"
+  ],
+  "contact": {
+    "repo": "https://github.com/Ramixin/VisibleTraders"
+  },
+  "license": "MIT",
+  "icon": "assets/visibletraders/icon.png",
+  "environment": "*",
+  "accessWidener": "visibletraders.accesswidener",
+  "mixins": [
+    "visibletraders.mixins.json",
+    {
+      "config": "visibletraders.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": ">=1.20"
+  }
+}
