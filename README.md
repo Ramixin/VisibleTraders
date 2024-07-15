@@ -1,5 +1,5 @@
 <div style="text-align: center;">
-<img src="brand.png"  alt="Tome Reader Logo">
+<img src="brand.png"  alt="Visible Traders Logo">
 <h2>
 <b>A mod that allows the player to view locked villager trades</b>
 </h2>
