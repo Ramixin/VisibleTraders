@@ -12,6 +12,7 @@ import net.minecraft.world.entity.npc.VillagerDataHolder;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.ramgames.visibletraders.VillagerDuck;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,7 +28,7 @@ import java.util.List;
 @Mixin(Villager.class)
 public abstract class VillagerMixin extends AbstractVillager implements ReputationEventHandler, VillagerDataHolder, VillagerDuck {
 
-    @Shadow public abstract VillagerData getVillagerData();
+    @Shadow public abstract @NotNull VillagerData getVillagerData();
 
     @Shadow public abstract void setVillagerData(VillagerData villagerData);
 
@@ -78,9 +79,7 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
         int dif = this.offers.size() - prev;
         MerchantOffers newOffers = new MerchantOffers();
         for(int i = 0; i < dif; i++) newOffers.add(this.offers.removeLast());
-        int lockedSize = this.lockedOffers.size();
         this.lockedOffers.add(newOffers);
-        if(this.lockedOffers.size() == lockedSize) System.out.println("no change");
         this.setVillagerData(data);
     }
 
