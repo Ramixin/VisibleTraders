@@ -1,14 +1,19 @@
 package net.ramgames.visibletraders.mixins;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ReputationEventHandler;
+import net.minecraft.world.entity.ai.village.ReputationEventType;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.npc.VillagerDataHolder;
+import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.ramgames.visibletraders.VillagerDuck;
@@ -36,11 +41,16 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Shadow public abstract boolean isClientSide();
 
+    @Shadow public abstract void onReputationEventFrom(ReputationEventType reputationEventType, Entity entity);
+
     @Unique
-    private static final Logger VisibleTradersLogger = LoggerFactory.getLogger("Visible Traders");
+    private static final Logger visibleTradersLogger = LoggerFactory.getLogger("Visible Traders");
 
     @Unique
     private List<MerchantOffers> lockedOffers = null;
+
+    @Unique
+    private MerchantOffer cachedTrade = null;
 
     @Unique
     private int prevLevel = 0;
@@ -51,22 +61,40 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
     private void writeOfferingLevel(CompoundTag compoundTag, CallbackInfo ci) {
-        if(this.lockedOffers != null)
-            compoundTag.put("LockedOffers", Codec.list(MerchantOffers.CODEC).encodeStart(this.registryAccess().createSerializationContext(NbtOps.INSTANCE), this.lockedOffers).getOrThrow());
+        if(this.lockedOffers == null) return;
+        DataResult<Tag> val = Codec.list(MerchantOffers.CODEC).encodeStart(this.registryAccess().createSerializationContext(NbtOps.INSTANCE), this.lockedOffers);
+        if(val.isError()) //noinspection OptionalGetWithoutIsPresent
+            visibleTradersLogger.error(val.error().get().toString());
+        else compoundTag.put("LockedOffers", val.getOrThrow());
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void updateLockedTradesOnTick(CallbackInfo ci) {
         if(this.isClientSide()) return;
 
+        int level = this.getVillagerData().getLevel();
+        prevLevel = level;
+
         if(this.offers == null) {
             this.lockedOffers = null;
             return;
         }
+
+        if(cachedTrade == null || this.offers.isEmpty()) {
+            this.lockedOffers = null;
+            if(!this.offers.isEmpty()) this.cachedTrade = this.offers.getFirst();
+            return;
+        }
+
+        if(cachedTrade != this.offers.getFirst()) {
+            this.lockedOffers = null;
+            this.cachedTrade = this.offers.getFirst();
+            return;
+        }
+
         if(this.lockedOffers == null) this.lockedOffers = new ArrayList<>();
         int size = this.lockedOffers.size();
-        int level = this.getVillagerData().getLevel();
-        prevLevel = level;
+
         if(size + level == 5) return;
         if(size > 0 && size + level > 5) {
             this.lockedOffers.removeFirst();
@@ -85,8 +113,12 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void readOfferingLevel(CompoundTag compoundTag, CallbackInfo ci) {
-        if(compoundTag.contains("LockedOffers")) Codec.list(MerchantOffers.CODEC).parse(this.registryAccess().createSerializationContext(NbtOps.INSTANCE), compoundTag.get("LockedOffers")).resultOrPartial(VisibleTradersLogger::error).ifPresent((lockedOffers) -> this.lockedOffers = new ArrayList<>(lockedOffers));
+        if(compoundTag.contains("LockedOffers")) Codec.list(MerchantOffers.CODEC).parse(this.registryAccess().createSerializationContext(NbtOps.INSTANCE), compoundTag.get("LockedOffers")).resultOrPartial(msg -> {
+            this.lockedOffers = new ArrayList<>();
+            visibleTradersLogger.error(msg);
+        }).ifPresent((lockedOffers) -> this.lockedOffers = new ArrayList<>(lockedOffers));
         else this.lockedOffers = new ArrayList<>();
+        if(this.offers != null && !this.offers.isEmpty()) cachedTrade = this.offers.getFirst();
     }
 
     @Inject(method = "updateTrades", at = @At("HEAD"), cancellable = true)
@@ -101,7 +133,7 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
         }
     }
 
-    @Inject(method = "increaseMerchantCareer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/npc/Villager;updateTrades()V", shift = At.Shift.BEFORE))
+    @Inject(method = "increaseMerchantCareer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/npc/Villager;updateTrades()V"))
     private void updateLastKnownLevelOnCareerIncrease(CallbackInfo ci) {
         this.prevLevel = this.getVillagerData().getLevel();
     }
@@ -116,7 +148,14 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
     public MerchantOffers visibleTraders$getLockedOffers() {
         if(this.lockedOffers == null) return new MerchantOffers();
         MerchantOffers lockedOffers = new MerchantOffers();
-        for(MerchantOffers listOffers : this.lockedOffers) lockedOffers.addAll(listOffers);
+        for(MerchantOffers listOffers : List.copyOf(this.lockedOffers)) for(MerchantOffer offer : listOffers) {
+            if(offer.getResult().isEmpty()) {
+                this.lockedOffers = new ArrayList<>();
+                visibleTradersLogger.error("detected incomplete trade. Rebuilding locked offers");
+                return new MerchantOffers();
+            }
+            lockedOffers.add(offer);
+        }
         return lockedOffers;
     }
 }

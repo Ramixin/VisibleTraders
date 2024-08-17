@@ -13,13 +13,13 @@ public interface MerchantMixin {
 
     @ModifyArg(method = "openTradingScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;sendMerchantOffers(ILnet/minecraft/world/item/trading/MerchantOffers;IIZZ)V"), index = 2)
     private int mergeUnlockedTradeCountWithLevel(int i) {
-        if(!((Merchant)(Object)this instanceof Villager villager)) return i;
+        if(!((Merchant) this instanceof Villager villager)) return i;
         return i | (((VillagerDuck)villager).visibleTraders$getAvailableOffersCount() << 8);
     }
 
     @ModifyArg(method = "openTradingScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;sendMerchantOffers(ILnet/minecraft/world/item/trading/MerchantOffers;IIZZ)V"), index = 1)
     private MerchantOffers appendLockedTradesToOffers(MerchantOffers merchantOffers) {
-        if(!((Merchant)(Object)this instanceof Villager villager)) return merchantOffers;
+        if(!((Merchant) this instanceof Villager villager)) return merchantOffers;
         MerchantOffers offersCopy = merchantOffers.copy();
         offersCopy.addAll(((VillagerDuck) villager).visibleTraders$getLockedOffers());
         return offersCopy;
