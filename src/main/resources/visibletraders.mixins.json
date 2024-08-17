@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.ramixin.visibletraders.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "visibletraders.refmap.json",
+  "mixins": [
+    "MerchantMenuMixin",
+    "MerchantMixin",
+    "VillagerMixin"
+  ],
+  "client": [
+    "MerchantScreenMixinClient"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
