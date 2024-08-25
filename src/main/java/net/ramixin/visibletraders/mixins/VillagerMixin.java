@@ -61,6 +61,8 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
     private void writeOfferingLevel(CompoundTag compoundTag, CallbackInfo ci) {
+        if(!this.isClientSide()) for(int i = 0; i < 5; i++) visibleTraders_NeoForge$lockedTradesTick();
+
         if(this.visibleTraders_NeoForge$lockedOffers == null) return;
         DataResult<Tag> val = Codec.list(MerchantOffers.CODEC).encodeStart(this.registryAccess().createSerializationContext(NbtOps.INSTANCE), this.visibleTraders_NeoForge$lockedOffers);
         if(val.isError()) //noinspection OptionalGetWithoutIsPresent
@@ -68,9 +70,8 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
         else compoundTag.put("LockedOffers", val.getOrThrow());
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void updateLockedTradesOnTick(CallbackInfo ci) {
-        if(this.isClientSide()) return;
+    @Unique
+    private void visibleTraders_NeoForge$lockedTradesTick() {
 
         int level = this.getVillagerData().getLevel();
         visibleTraders_NeoForge$prevLevel = level;
@@ -109,6 +110,14 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
         for(int i = 0; i < dif; i++) newOffers.add(this.offers.removeLast());
         this.visibleTraders_NeoForge$lockedOffers.add(newOffers);
         this.setVillagerData(data);
+
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void updateLockedTradesOnTick(CallbackInfo ci) {
+        if(this.isClientSide()) return;
+
+        visibleTraders_NeoForge$lockedTradesTick();
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
