@@ -1,23 +1,27 @@
 package net.ramixin.visibletraders.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.world.inventory.MerchantContainer;
 import net.minecraft.world.item.trading.Merchant;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.world.item.trading.MerchantOffers;
+import net.ramixin.visibletraders.ClientSideMerchantDuck;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 
 @Mixin(MerchantContainer.class)
 public class MerchantContainerMixin {
 
-    @Shadow @Final private Merchant merchant;
-
-    @Inject(method = "updateSellItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z", ordinal = 0, shift = At.Shift.BEFORE), cancellable = true)
-    private void removeTradeAutoFillIfLocked(CallbackInfo ci) {
-        if(this.merchant.isClientSide()) ci.cancel();
+    @WrapOperation(method = "updateSellItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/trading/Merchant;getOffers()Lnet/minecraft/world/item/trading/MerchantOffers;"))
+    private MerchantOffers removeTradeAutoFillIfLocked(Merchant instance, Operation<MerchantOffers> original) {
+        MerchantOffers offers = original.call(instance);
+        if(instance instanceof ClientSideMerchantDuck duck) {
+            MerchantOffers unlockedOffers = duck.visibleTraders$getClientUnlockedTrades();
+            if(unlockedOffers == null) return offers;
+            else return unlockedOffers;
+        }
+        return offers;
     }
 
 }

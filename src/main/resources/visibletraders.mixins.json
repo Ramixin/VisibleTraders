@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "visibletraders.refmap.json",
   "mixins": [
+    "ClientSideMerchantMixin",
+    "MerchantContainerMixin",
     "MerchantMenuMixin",
     "MerchantMixin",
     "VillagerMixin"
