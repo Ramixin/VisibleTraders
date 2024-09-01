@@ -4,6 +4,7 @@
   "package": "net.ramgames.visibletraders.mixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ClientSideMerchantMixin",
     "MerchantContainerMixin",
     "MerchantMenuMixin",
     "MerchantMixin",
