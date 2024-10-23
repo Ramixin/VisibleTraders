@@ -39,8 +39,6 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Shadow public abstract void updateTrades();
 
-    @Shadow public abstract boolean isClientSide();
-
     @Shadow public abstract void onReputationEventFrom(ReputationEventType reputationEventType, Entity entity);
 
     @Unique
@@ -71,6 +69,7 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
     @Inject(method = "tick", at = @At("HEAD"))
     private void updateLockedTradesOnTick(CallbackInfo ci) {
         if(this.isClientSide()) return;
+        if(!this.level().hasChunk((int) (this.getX() / 16), (int) (this.getZ() / 16))) return;
 
         int level = this.getVillagerData().getLevel();
         prevLevel = level;
