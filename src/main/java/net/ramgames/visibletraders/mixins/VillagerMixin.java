@@ -66,11 +66,8 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
         else compoundTag.put("LockedOffers", val.getOrThrow());
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void updateLockedTradesOnTick(CallbackInfo ci) {
-        if(this.isClientSide()) return;
-        if(!this.level().hasChunk((int) (this.getX() / 16), (int) (this.getZ() / 16))) return;
-
+    @Unique
+    private void tickLockedTrades() {
         int level = this.getVillagerData().getLevel();
         prevLevel = level;
 
@@ -108,6 +105,18 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
         for(int i = 0; i < dif; i++) newOffers.add(this.offers.removeLast());
         this.lockedOffers.add(newOffers);
         this.setVillagerData(data);
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void updateLockedTradesOnTick(CallbackInfo ci) {
+        if(this.isClientSide()) return;
+        if(!this.level().hasChunk((int) (this.getX() / 16), (int) (this.getZ() / 16))) return;
+        tickLockedTrades();
+    }
+
+    @Override
+    public void visibleTraders$forceTradeGeneration() {
+        for(int i = 0; i < 5; i++) tickLockedTrades();
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))

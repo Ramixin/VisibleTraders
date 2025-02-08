@@ -7,4 +7,7 @@ public interface VillagerDuck {
     int visibleTraders$getAvailableOffersCount();
 
     MerchantOffers visibleTraders$getLockedOffers();
+
+    @SuppressWarnings("unused")
+    void visibleTraders$forceTradeGeneration();
 }
