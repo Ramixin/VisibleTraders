@@ -27,7 +27,7 @@ public abstract class MerchantMenuMixin implements MerchantMenuDuck {
     @Unique
     private int unlockedTradeCount = 0;
 
-    @Inject(method = "setMerchantLevel", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "setMerchantLevel", at = @At("TAIL"))
     private void readUnlockedTradeCountFromLevel(int i, CallbackInfo ci) {
         unlockedTradeCount = i >> 8;
         if(this.trader instanceof ClientSideMerchantDuck duck) {
@@ -37,7 +37,6 @@ public abstract class MerchantMenuMixin implements MerchantMenuDuck {
             duck.visibleTraders$setClientUnlockedTrades(offers);
         }
         this.merchantLevel = i & 255;
-        ci.cancel();
     }
 
 
