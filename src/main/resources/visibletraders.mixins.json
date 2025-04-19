@@ -9,7 +9,9 @@
     "MerchantMenuMixin",
     "MerchantMixin",
     "ServerPlayerMixin",
-    "VillagerMixin"
+    "VillagerMixin",
+    "ZombieMixin",
+    "ZombieVillagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

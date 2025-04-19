@@ -4,8 +4,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffers;
-import net.ramgames.visibletraders.ServerPlayerDuck;
-import net.ramgames.visibletraders.VillagerDuck;
+import net.ramgames.visibletraders.ducks.ServerPlayerDuck;
+import net.ramgames.visibletraders.ducks.VillagerDuck;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 

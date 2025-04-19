@@ -1,4 +1,4 @@
-package net.ramgames.visibletraders;
+package net.ramgames.visibletraders.ducks;
 
 import net.minecraft.world.item.trading.MerchantOffers;
 import org.spongepowered.asm.mixin.Unique;
