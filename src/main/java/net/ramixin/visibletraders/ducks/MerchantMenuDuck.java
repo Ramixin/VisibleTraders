@@ -1,4 +1,4 @@
-package net.ramgames.visibletraders.ducks;
+package net.ramixin.visibletraders.ducks;
 
 public interface MerchantMenuDuck {
 

@@ -1,11 +1,11 @@
-package net.ramgames.visibletraders.mixins;
+package net.ramixin.visibletraders.mixins;
 
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
-import net.ramgames.visibletraders.ducks.ClientSideMerchantDuck;
-import net.ramgames.visibletraders.ducks.MerchantMenuDuck;
+import net.ramixin.visibletraders.ducks.ClientSideMerchantDuck;
+import net.ramixin.visibletraders.ducks.MerchantMenuDuck;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

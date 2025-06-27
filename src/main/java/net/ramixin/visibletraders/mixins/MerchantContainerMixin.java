@@ -1,11 +1,11 @@
-package net.ramgames.visibletraders.mixins;
+package net.ramixin.visibletraders.mixins;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.world.inventory.MerchantContainer;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffers;
-import net.ramgames.visibletraders.ducks.ClientSideMerchantDuck;
+import net.ramixin.visibletraders.ducks.ClientSideMerchantDuck;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 

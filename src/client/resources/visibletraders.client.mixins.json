@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.ramgames.visibletraders.mixins.client",
+  "package": "net.ramixin.visibletraders.mixins.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
     "MerchantScreenMixin"

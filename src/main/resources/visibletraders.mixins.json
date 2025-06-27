@@ -1,14 +1,13 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.ramgames.visibletraders.mixins",
+  "package": "net.ramixin.visibletraders.mixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ClientSideMerchantMixin",
     "MerchantContainerMixin",
     "MerchantMenuMixin",
     "MerchantMixin",
-    "ServerPlayerMixin",
     "VillagerMixin",
     "ZombieMixin",
     "ZombieVillagerMixin"
