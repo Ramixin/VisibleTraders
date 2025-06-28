@@ -54,9 +54,18 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
         lockedTradeData.setValue(new LockedTradeData(valueInput, (Villager) (Object) this));
     }
 
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void removeLockedTradeDataIfNoOffers(CallbackInfo ci) {
+        if(this.offers == null)
+            this.lockedTradeData.setValue(null);
+    }
+
     @Inject(method = "updateTrades", at = @At("HEAD"), cancellable = true)
     private void preventAdditionalTradesOnRankIncrease(CallbackInfo ci) {
-        if(this.offers == null) return;
+        if(this.offers == null) {
+            this.lockedTradeData.setValue(null);
+            return;
+        }
         ifPresent(data -> {
             MerchantOffers dismissedTrades = data.popTradeSet();
             if(dismissedTrades != null) {
@@ -82,7 +91,7 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
     }
 
     @Override
-    public int visibleTrades$getShiftedLevel() {
+    public int visibleTraders$getShiftedLevel() {
         int level = getVillagerData().level();
         if(this.offers == null) return level;
         return level | (this.offers.size() << 8);

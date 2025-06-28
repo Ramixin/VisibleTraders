@@ -30,7 +30,7 @@ public class LockedTradeData {
     }
 
     private LockedTradeData(List<MerchantOffers> offers) {
-        this.lockedOffers = offers;
+        this.lockedOffers = new ArrayList<>(offers);
     }
 
     public static @Nullable LockedTradeData constructOrNull(ValueInput valueInput) {
@@ -45,7 +45,6 @@ public class LockedTradeData {
         int level = data.level();
         while(level < 5) {
             villager.setVillagerData(data.withLevel(++level));
-            System.out.println("generated level: " + level);
             int prev = offers.size();
             villager.updateTrades();
             int dif = offers.size() - prev;

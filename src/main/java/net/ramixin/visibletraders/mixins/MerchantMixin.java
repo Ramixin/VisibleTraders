@@ -18,7 +18,7 @@ public interface MerchantMixin {
         if(!(((Merchant)this) instanceof Villager villager)) original.call(instance, syncId, merchantOffers, j, k, bl, bl2);
         else {
             VillagerDuck duck = VillagerDuck.of(villager);
-            original.call(instance, syncId, duck.visibleTraders$getCombinedOffers(), duck.visibleTrades$getShiftedLevel(), k, bl, bl2);
+            original.call(instance, syncId, duck.visibleTraders$getCombinedOffers(), duck.visibleTraders$getShiftedLevel(), k, bl, bl2);
         }
     }
 

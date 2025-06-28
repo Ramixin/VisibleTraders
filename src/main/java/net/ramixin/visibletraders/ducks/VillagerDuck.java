@@ -20,5 +20,5 @@ public interface VillagerDuck {
 
     MerchantOffers visibleTraders$getCombinedOffers();
 
-    int visibleTrades$getShiftedLevel();
+    int visibleTraders$getShiftedLevel();
 }
