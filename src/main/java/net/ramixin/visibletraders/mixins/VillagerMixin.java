@@ -62,7 +62,7 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Inject(method = "updateTrades", at = @At("HEAD"), cancellable = true)
     private void preventAdditionalTradesOnRankIncrease(CallbackInfo ci) {
-        if(this.offers == null) {
+        if(this.offers == null || this.offers.isEmpty()) {
             this.lockedTradeData.setValue(null);
             return;
         }
