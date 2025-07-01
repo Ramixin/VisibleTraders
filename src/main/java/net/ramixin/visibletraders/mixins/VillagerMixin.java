@@ -23,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 @Mixin(Villager.class)
@@ -51,13 +52,14 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void readLockedTradeData(ValueInput valueInput, CallbackInfo ci) {
-        lockedTradeData.setValue(new LockedTradeData(valueInput, (Villager) (Object) this));
+        lockedTradeData.setValue(new LockedTradeData(valueInput));
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void removeLockedTradeDataIfNoOffers(CallbackInfo ci) {
         if(this.offers == null)
             this.lockedTradeData.setValue(null);
+        ifPresent(data -> data.tick((Villager) (Object) this, this::appendLockedOffer));
     }
 
     @Inject(method = "updateTrades", at = @At("HEAD"), cancellable = true)
@@ -66,13 +68,21 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
             this.lockedTradeData.setValue(null);
             return;
         }
+        if(appendLockedOffer()) ci.cancel();
+    }
+
+    @Unique
+    private boolean appendLockedOffer() {
+        if(this.offers == null) return false;
+        AtomicBoolean result = new AtomicBoolean(false);
         ifPresent(data -> {
             MerchantOffers dismissedTrades = data.popTradeSet();
             if(dismissedTrades != null) {
                 this.offers.addAll(dismissedTrades);
-                ci.cancel();
+                result.set(true);
             }
         });
+        return result.get();
     }
 
     @Override

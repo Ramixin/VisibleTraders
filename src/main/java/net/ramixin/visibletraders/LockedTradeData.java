@@ -24,9 +24,9 @@ public class LockedTradeData {
         this.lockedOffers = generateTrades(villager);
     }
 
-    public LockedTradeData(ValueInput valueInput, Villager villager) {
+    public LockedTradeData(ValueInput valueInput) {
         Optional<List<MerchantOffers>> offers = valueInput.read("LockedOffers", MerchantOffers.CODEC.listOf());
-        this.lockedOffers = offers.orElseGet(() -> generateTrades(villager));
+        this.lockedOffers = offers.map(ArrayList::new).orElse(null);
     }
 
     private LockedTradeData(List<MerchantOffers> offers) {
@@ -38,10 +38,10 @@ public class LockedTradeData {
         return offers.map(LockedTradeData::new).orElse(null);
     }
 
-    private static List<MerchantOffers> generateTrades(Villager villager) {
+    private static ArrayList<MerchantOffers> generateTrades(Villager villager) {
         MerchantOffers offers = villager.getOffers();
         VillagerData data = villager.getVillagerData();
-        List<MerchantOffers> lockedOffers = new ArrayList<>();
+        ArrayList<MerchantOffers> lockedOffers = new ArrayList<>();
         int level = data.level();
         while(level < 5) {
             villager.setVillagerData(data.withLevel(++level));
@@ -82,5 +82,14 @@ public class LockedTradeData {
             lockedOffers.add(offer);
         }
         return lockedOffers;
+    }
+
+    public void tick(Villager villager, Runnable popCallback) {
+        int requiredSets = 5 - villager.getVillagerData().level();
+        while(requiredSets < this.lockedOffers.size()) popCallback.run();
+        if(requiredSets > this.lockedOffers.size()) {
+            visibleTradersLogger.error("detected missing locked trade sets. Rebuilding locked offers");
+            this.lockedOffers = generateTrades(villager);
+        }
     }
 }
