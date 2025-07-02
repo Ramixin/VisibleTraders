@@ -85,6 +85,7 @@ public class LockedTradeData {
     }
 
     public void tick(Villager villager, Runnable popCallback) {
+        if(this.lockedOffers == null) return;
         int requiredSets = 5 - villager.getVillagerData().level();
         while(requiredSets < this.lockedOffers.size()) popCallback.run();
         if(requiredSets > this.lockedOffers.size()) {
