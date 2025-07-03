@@ -66,7 +66,7 @@ public class LockedTradeData {
     }
 
     public MerchantOffers popTradeSet() {
-        if(hasNoOffers()) return null;
+        if(this.lockedOffers == null || hasNoOffers()) return null;
         return this.lockedOffers.removeFirst();
     }
 
