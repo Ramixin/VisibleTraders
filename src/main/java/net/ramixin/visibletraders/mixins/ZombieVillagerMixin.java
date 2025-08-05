@@ -45,7 +45,7 @@ public abstract class ZombieVillagerMixin extends Zombie implements ZombieVillag
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void readLockedTradeData(ValueInput valueInput, CallbackInfo ci) {
-        lockedTradeData.setValue(LockedTradeData.constructOrNull(valueInput));
+        lockedTradeData.setValue(LockedTradeData.constructOrNull(valueInput, this));
     }
 
     @Inject(method = "method_63659", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/npc/Villager;setVillagerXp(I)V"))

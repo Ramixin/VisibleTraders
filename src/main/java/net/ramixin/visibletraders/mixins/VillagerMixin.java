@@ -52,7 +52,7 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void readLockedTradeData(ValueInput valueInput, CallbackInfo ci) {
-        lockedTradeData.setValue(new LockedTradeData(valueInput));
+        lockedTradeData.setValue(LockedTradeData.constructOrNull(valueInput, this));
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
