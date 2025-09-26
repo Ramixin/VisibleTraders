@@ -17,7 +17,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
-import net.ramixin.visibletraders.VisibleTraders;
 import net.ramixin.visibletraders.ducks.MerchantMenuDuck;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -47,8 +46,9 @@ public abstract class MerchantScreenMixin extends AbstractContainerScreen<Mercha
             original.call(instance, guiGraphics, i, j);
             return;
         }
-        VisibleTraders.LOGGER.debug("offers: {}", this.menu.getOffers());
-        MerchantOffer offer = this.menu.getOffers().get(instance.getIndex() + this.scrollOff);
+        int indexer = instance.getIndex() + this.scrollOff;
+        if(indexer >= this.menu.getOffers().size()) return;
+        MerchantOffer offer = this.menu.getOffers().get(indexer);
         if(!offer.getCostA().isEmpty()) original.call(instance, guiGraphics, i, j);
         else if(!offer.getResult().is(Items.BARRIER)) original.call(instance, guiGraphics, i, j);
         else {
