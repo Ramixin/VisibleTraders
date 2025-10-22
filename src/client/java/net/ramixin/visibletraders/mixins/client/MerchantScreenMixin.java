@@ -45,15 +45,15 @@ public abstract class MerchantScreenMixin extends AbstractContainerScreen<Mercha
     // UPDATED: Changed method to `renderContents`. The target for WrapOperation is still valid.
     @WrapOperation(method = "renderContents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/MerchantScreen$TradeOfferButton;renderToolTip(Lnet/minecraft/client/gui/GuiGraphics;II)V"))
     private void ifStillGeneratingChangeTooltip(MerchantScreen.TradeOfferButton instance, GuiGraphics guiGraphics, int i, int j, Operation<Void> original) {
-        if (!instance.isHoveredOrFocused()) { // Mojang changed this from isHovered()
+        if(!instance.isHoveredOrFocused()) { // Mojang changed this from isHovered()
             original.call(instance, guiGraphics, i, j);
             return;
         }
         VisibleTraders.LOGGER.debug("offers: {}", this.menu.getOffers());
         MerchantOffer offer = this.menu.getOffers().get(instance.getIndex() + this.scrollOff);
-        if (!offer.getCostA().isEmpty()) original.call(instance, guiGraphics, i, j);
-        else if (!offer.getResult().is(Items.BARRIER)) original.call(instance, guiGraphics, i, j);
-        else {
+        if(!offer.getCostA().isEmpty()) original.call(instance, guiGraphics, i, j);
+        else if(!offer.getResult().is(Items.BARRIER)) original.call(instance, guiGraphics, i, j);
+        else{
             guiGraphics.setTooltipForNextFrame(this.font, Component.translatable("menu.trading.generating_full"), i, j);
         }
     }
@@ -70,8 +70,8 @@ public abstract class MerchantScreenMixin extends AbstractContainerScreen<Mercha
     // This mixin captures the current offer in the loop.
     @Inject(method = "renderContents", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/trading/MerchantOffer;getBaseCostA()Lnet/minecraft/world/item/ItemStack;"))
     private void decideIfTradeIsStillGenerating_BODY(GuiGraphics guiGraphics, int i, int j, float f, CallbackInfo ci, @Local MerchantOffer merchantOffer, @Share("visibletraders:isFuture") LocalBooleanRef isFuture) {
-        if (!merchantOffer.getCostA().isEmpty()) return;
-        if (!merchantOffer.getResult().is(Items.BARRIER)) return;
+        if(!merchantOffer.getCostA().isEmpty()) return;
+        if(!merchantOffer.getResult().is(Items.BARRIER)) return;
         isFuture.set(true);
     }
 
@@ -79,7 +79,7 @@ public abstract class MerchantScreenMixin extends AbstractContainerScreen<Mercha
     // UPDATED: Changed method to `renderContents`. The target is still valid.
     @ModifyExpressionValue(method = "renderContents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/MerchantScreen;canScroll(I)Z"))
     private boolean preventRenderingIfFuture(boolean original, @Share("visibletraders:isFuture") LocalBooleanRef isFuture) {
-        if (isFuture.get()) return true;
+        if(isFuture.get()) return true;
         return original;
     }
 
@@ -89,7 +89,7 @@ public abstract class MerchantScreenMixin extends AbstractContainerScreen<Mercha
     @Expression("? < 7 + this.scrollOff")
     @ModifyExpressionValue(method = "renderContents", at = @At("MIXINEXTRAS:EXPRESSION"))
     private boolean continuePreventingRenderingIfFutureAndRender(boolean original, @Share("visibletraders:isFuture") LocalBooleanRef isFuture, @Local(argsOnly = true) GuiGraphics graphics, @Local(ordinal = 2) int k, @Local(ordinal = 4) LocalIntRef m) {
-        if (!isFuture.get() || !original) return original;
+        if(!isFuture.get() || !original) return original;
         graphics.drawCenteredString(this.font, Component.translatable("menu.trading.generating"), k + 5 + 5 + 44, m.get() + 2 + 7, 0xFF_FF_FF_FF); // Centered the text
         m.set(m.get() + 20);
         isFuture.set(false);
