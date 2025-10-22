@@ -11,6 +11,7 @@ base {
 }
 
 loom {
+
     accessWidenerPath = file("src/main/resources/visibletraders.accesswidener")
     splitEnvironmentSourceSets()
     mods {
@@ -22,7 +23,7 @@ loom {
 }
 
 repositories {
-    // We only need the official Fabric repository
+   
     maven { url 'https://maven.fabricmc.net/' }
 }
 
@@ -32,7 +33,6 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // REMOVED MixinExtras dependencies. Fabric Loader 0.17.0 provides them.
 }
 
 processResources {
@@ -73,7 +73,8 @@ publishing {
             from components.java
         }
     }
+    
     repositories {
-        // Add repositories to publish to here.
+       
     }
 }
