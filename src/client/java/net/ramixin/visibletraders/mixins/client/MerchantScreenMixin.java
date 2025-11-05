@@ -35,12 +35,12 @@ public abstract class MerchantScreenMixin extends AbstractContainerScreen<Mercha
         super(abstractContainerMenu, inventory, component);
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/trading/MerchantOffers;size()I", ordinal = 1))
+    @Inject(method = "renderContents", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/trading/MerchantOffers;size()I", ordinal = 1))
     private void disableOptionIfOutOfLevelRange(GuiGraphics guiGraphics, int i, int j, float f, CallbackInfo ci, @Local MerchantScreen.TradeOfferButton tradeOfferButton) {
         tradeOfferButton.active = ((MerchantMenuDuck) this.menu).visibleTraders$shouldAllowTrade(tradeOfferButton.getIndex() + scrollOff);
     }
 
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/MerchantScreen$TradeOfferButton;renderToolTip(Lnet/minecraft/client/gui/GuiGraphics;II)V"))
+    @WrapOperation(method = "renderContents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/MerchantScreen$TradeOfferButton;renderToolTip(Lnet/minecraft/client/gui/GuiGraphics;II)V"))
     private void ifStillGeneratingChangeTooltip(MerchantScreen.TradeOfferButton instance, GuiGraphics guiGraphics, int i, int j, Operation<Void> original) {
         if(!instance.isHovered()) {
             original.call(instance, guiGraphics, i, j);
@@ -58,7 +58,7 @@ public abstract class MerchantScreenMixin extends AbstractContainerScreen<Mercha
 
     // BEHOLD: THE LEAST SKETCHY WAY TO RENDER TEXT INSTEAD OF ITEMS
 
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;next()Ljava/lang/Object;"))
+    @WrapOperation(method = "renderContents", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;next()Ljava/lang/Object;"))
     private <E> E decideIfTradeIsStillGenerating(Iterator<E> instance, Operation<E> original, @Share("visibletraders:isFuture") LocalBooleanRef isFuture) {
         E value = original.call(instance);
         if(!(value instanceof MerchantOffer offer)) return value;
@@ -68,15 +68,16 @@ public abstract class MerchantScreenMixin extends AbstractContainerScreen<Mercha
         return value;
     }
 
-    @ModifyExpressionValue(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/MerchantScreen;canScroll(I)Z"))
+    @ModifyExpressionValue(method = "renderContents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/MerchantScreen;canScroll(I)Z"))
     private boolean preventRenderingIfFuture(boolean original, @Share("visibletraders:isFuture") LocalBooleanRef isFuture) {
         if(isFuture.get()) return true;
         return original;
     }
 
+    @SuppressWarnings("LocalMayBeArgsOnly")
     @Definition(id = "scrollOff", field = "Lnet/minecraft/client/gui/screens/inventory/MerchantScreen;scrollOff:I")
     @Expression("? < 7 + this.scrollOff")
-    @ModifyExpressionValue(method = "render", at = @At("MIXINEXTRAS:EXPRESSION"))
+    @ModifyExpressionValue(method = "renderContents", at = @At("MIXINEXTRAS:EXPRESSION"))
     private boolean continuePreventingRenderingIfFutureAndRender(boolean original, @Share("visibletraders:isFuture") LocalBooleanRef isFuture, @Local(argsOnly = true) GuiGraphics graphics, @Local(ordinal = 2) int k, @Local(ordinal = 4) LocalIntRef m) {
         if(!isFuture.get() || !original) return original;
         graphics.drawCenteredString(this.font, Component.translatable("menu.trading.generating"), k + 50, m.get() + 7, 0xFF_FF_FF_FF);
