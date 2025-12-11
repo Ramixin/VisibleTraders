@@ -27,6 +27,10 @@ Yes! This mod is fully compatible with all villager types.
 ---
 Yes again! This mod will make sure any villager existing before this mod is installed will display their trades as well.
 
+# If this mod is installed on a server, can I play on that server without this mod installed on my client?
+
+Answer here please
+
 ## License
 
 ---
