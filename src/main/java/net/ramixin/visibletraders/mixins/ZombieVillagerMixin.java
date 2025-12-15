@@ -2,9 +2,9 @@ package net.ramixin.visibletraders.mixins;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.entity.monster.ZombieVillager;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.monster.zombie.Zombie;
+import net.minecraft.world.entity.monster.zombie.ZombieVillager;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -33,7 +33,7 @@ public abstract class ZombieVillagerMixin extends Zombie implements ZombieVillag
 
     @Unique
     private void ifPresent(Consumer<LockedTradeData> consumer) {
-        LockedTradeData val = lockedTradeData.getValue();
+        LockedTradeData val = lockedTradeData.get();
         if(val == null) return;
         consumer.accept(val);
     }
@@ -48,9 +48,9 @@ public abstract class ZombieVillagerMixin extends Zombie implements ZombieVillag
         lockedTradeData.setValue(LockedTradeData.constructOrNull(valueInput, this));
     }
 
-    @Inject(method = "method_63659", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/npc/Villager;setVillagerXp(I)V"))
+    @Inject(method = "method_63659", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/npc/villager/Villager;setVillagerXp(I)V"))
     private void transferTradesToVillager(ServerLevel serverLevel, Villager villager, CallbackInfo ci) {
-        VillagerDuck.of(villager).visibleTraders$setLockedTradeData(lockedTradeData.getValue());
+        VillagerDuck.of(villager).visibleTraders$setLockedTradeData(lockedTradeData.get());
     }
 
     @Override

@@ -1,6 +1,6 @@
 package net.ramixin.visibletraders.ducks;
 
-import net.minecraft.world.entity.monster.ZombieVillager;
+import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 import net.ramixin.visibletraders.LockedTradeData;
 
 public interface ZombieVillagerDuck {

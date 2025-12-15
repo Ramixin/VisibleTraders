@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.entity.npc.villager.VillagerTrades;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.ramixin.visibletraders.ducks.TreasureMapForEmeraldsDuck;
 import net.ramixin.visibletraders.threading.SerializableListing;

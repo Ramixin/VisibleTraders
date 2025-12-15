@@ -1,13 +1,15 @@
 package net.ramixin.visibletraders;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerData;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerData;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.ramixin.visibletraders.ducks.VillagerDuck;
 import net.ramixin.visibletraders.threading.FutureMerchantOffer;
 import net.ramixin.visibletraders.threading.SerializableListing;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +32,8 @@ public class LockedTradeData {
     }
 
     public static @Nullable LockedTradeData constructOrNull(ValueInput valueInput, Entity entity) {
+        if(!(entity.level() instanceof ServerLevel level))
+            return null;
         Optional<List<MerchantOffers>> maybeOffers = valueInput.read("LockedOffers", MerchantOffers.CODEC.listOf());
         if(maybeOffers.isEmpty()) return null;
         List<MerchantOffers> offers = maybeOffers.get();
@@ -45,7 +49,7 @@ public class LockedTradeData {
                 int[] index = indices.get(i);
                 if(index[0] >= offers.size()) return null;
                 MerchantOffers offerSet = offers.get(index[0]);
-                FutureMerchantOffer futureOffer = new FutureMerchantOffer(listing, () -> listing.visibleTrades$buildOffer(entity, entity.getRandom()));
+                FutureMerchantOffer futureOffer = new FutureMerchantOffer(listing, () -> listing.visibleTrades$buildOffer(level, entity, entity.getRandom()));
                 VisibleTraders.TRADE_WORKER.addOrder(futureOffer);
                 offerSet.add(index[1], futureOffer);
             }
@@ -61,7 +65,7 @@ public class LockedTradeData {
         while(level < 5) {
             villager.setVillagerData(data.withLevel(++level));
             int prev = offers.size();
-            villager.updateTrades();
+            VillagerDuck.of(villager).visibleTraders$updateTrades();
             int dif = offers.size() - prev;
             MerchantOffers newOffers = new MerchantOffers();
             for(int i = 0; i < dif; i++) newOffers.add(offers.removeLast());

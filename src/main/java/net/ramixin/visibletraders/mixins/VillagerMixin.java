@@ -1,11 +1,12 @@
 package net.ramixin.visibletraders.mixins;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ReputationEventHandler;
-import net.minecraft.world.entity.npc.AbstractVillager;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerData;
-import net.minecraft.world.entity.npc.VillagerDataHolder;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerData;
+import net.minecraft.world.entity.npc.villager.VillagerDataHolder;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
@@ -15,6 +16,7 @@ import net.ramixin.visibletraders.ducks.VillagerDuck;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -31,6 +33,9 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Shadow public abstract @NotNull VillagerData getVillagerData();
 
+    @Shadow
+    protected abstract void updateTrades(@NonNull ServerLevel serverLevel);
+
     @Unique
     private final Mutable<LockedTradeData> lockedTradeData = new MutableObject<>();
 
@@ -40,7 +45,7 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Unique
     private void ifPresent(Consumer<LockedTradeData> consumer) {
-        LockedTradeData val = lockedTradeData.getValue();
+        LockedTradeData val = lockedTradeData.get();
         if(val == null) return;
         consumer.accept(val);
     }
@@ -92,7 +97,7 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Override
     public Optional<LockedTradeData> visibleTraders$getLockedTradeData() {
-        return Optional.ofNullable(lockedTradeData.getValue());
+        return Optional.ofNullable(lockedTradeData.get());
     }
 
     @Override
@@ -111,9 +116,16 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
     public MerchantOffers visibleTraders$getCombinedOffers() {
         MerchantOffers offers = new MerchantOffers();
         offers.addAll(this.offers);
-        if(lockedTradeData.getValue() == null)
+        if(lockedTradeData.get() == null)
             visibleTrades$regenerateTrades();
         ifPresent(data -> offers.addAll(data.buildLockedOffers()));
         return offers;
+    }
+
+    @Override
+    public void visibleTraders$updateTrades() {
+        if(!(level() instanceof ServerLevel serverLevel))
+            return;
+        updateTrades(serverLevel);
     }
 }
