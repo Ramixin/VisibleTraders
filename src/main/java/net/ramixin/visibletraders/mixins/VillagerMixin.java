@@ -1,5 +1,7 @@
 package net.ramixin.visibletraders.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ReputationEventHandler;
@@ -7,12 +9,14 @@ import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerData;
 import net.minecraft.world.entity.npc.villager.VillagerDataHolder;
+import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.ramixin.visibletraders.LockedTradeData;
 import net.ramixin.visibletraders.ducks.VillagerDuck;
+import net.ramixin.visibletraders.threading.FutureMerchantOffer;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
@@ -89,6 +93,22 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
         });
         return result.get();
     }
+
+    @WrapOperation(method = "customServerAiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/npc/villager/Villager;isTrading()Z", ordinal = 0))
+    private boolean preventUpgradeIfStillGeneratingTrades(Villager instance, Operation<Boolean> original) {
+        boolean originalResult = original.call(instance);
+        if(originalResult) return true;
+        if(lockedTradeData.get() == null) return false;
+        LockedTradeData data = lockedTradeData.get();
+        MerchantOffers soonOffers = data.peekTradeSet();
+        for(MerchantOffer offer : soonOffers) {
+            if(offer instanceof FutureMerchantOffer futureOffer) {
+                if(!futureOffer.isFulfilled()) return true;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public void visibleTraders$setLockedTradeData(LockedTradeData data) {

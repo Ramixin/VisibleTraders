@@ -87,7 +87,7 @@ public class LockedTradeData {
                 MerchantOffer offer = offers.get(j);
                 if (!(offer instanceof FutureMerchantOffer futureOffer)) newOffers.add(offer);
                 else {
-                    if (futureOffer.fulfilled())
+                    if (futureOffer.isFulfilled())
                         newOffers.add(Objects.requireNonNull(futureOffer.getFuture(), "Future offers was null although fulfilled"));
                     else {
                         futureOfferIndexes.add(((long)i) << 32 | j);
@@ -109,6 +109,10 @@ public class LockedTradeData {
     public MerchantOffers popTradeSet() {
         if(this.lockedOffers == null || hasNoOffers()) return null;
         return this.lockedOffers.removeFirst();
+    }
+
+    public MerchantOffers peekTradeSet() {
+        return this.lockedOffers.getFirst();
     }
 
     public MerchantOffers buildLockedOffers() {
