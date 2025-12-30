@@ -32,6 +32,7 @@ public class LockedTradeData {
     }
 
     public static @Nullable LockedTradeData constructOrNull(ValueInput valueInput, Entity entity) {
+        //noinspection resource
         if(!(entity.level() instanceof ServerLevel level))
             return null;
         Optional<List<MerchantOffers>> maybeOffers = valueInput.read("LockedOffers", MerchantOffers.CODEC.listOf());
@@ -111,8 +112,11 @@ public class LockedTradeData {
         return this.lockedOffers.removeFirst();
     }
 
-    public MerchantOffers peekTradeSet() {
-        return this.lockedOffers.getFirst();
+    public Optional<MerchantOffers> peekTradeSet() {
+        if(this.lockedOffers.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.lockedOffers.getFirst());
     }
 
     public MerchantOffers buildLockedOffers() {

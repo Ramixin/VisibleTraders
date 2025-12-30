@@ -100,8 +100,9 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
         if(originalResult) return true;
         if(lockedTradeData.get() == null) return false;
         LockedTradeData data = lockedTradeData.get();
-        MerchantOffers soonOffers = data.peekTradeSet();
-        for(MerchantOffer offer : soonOffers) {
+        Optional<MerchantOffers> maybeSoonOffers = data.peekTradeSet();
+        if(maybeSoonOffers.isEmpty()) return false;
+        for(MerchantOffer offer : maybeSoonOffers.get()) {
             if(offer instanceof FutureMerchantOffer futureOffer) {
                 if(!futureOffer.isFulfilled()) return true;
             }
@@ -144,6 +145,7 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Override
     public void visibleTraders$updateTrades() {
+        //noinspection resource
         if(!(level() instanceof ServerLevel serverLevel))
             return;
         updateTrades(serverLevel);
