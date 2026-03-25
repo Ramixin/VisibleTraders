@@ -39,17 +39,17 @@ public abstract class ZombieVillagerMixin extends Zombie implements ZombieVillag
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
-    private void saveLockedTradeData(ValueOutput valueOutput, CallbackInfo ci) {
-        ifPresent(data -> data.write(valueOutput));
+    private void saveLockedTradeData(ValueOutput output, CallbackInfo ci) {
+        ifPresent(data -> data.write(output));
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-    private void readLockedTradeData(ValueInput valueInput, CallbackInfo ci) {
-        lockedTradeData.setValue(LockedTradeData.constructOrNull(valueInput, this));
+    private void readLockedTradeData(ValueInput input, CallbackInfo ci) {
+        lockedTradeData.setValue(LockedTradeData.constructOrNull(input, this));
     }
 
-    @Inject(method = "method_63659", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/npc/villager/Villager;setVillagerXp(I)V"))
-    private void transferTradesToVillager(ServerLevel serverLevel, Villager villager, CallbackInfo ci) {
+    @Inject(method = "lambda$finishConversion$0", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/npc/villager/Villager;setVillagerXp(I)V"))
+    private void transferTradesToVillager(ServerLevel level, Villager villager, CallbackInfo ci) {
         VillagerDuck.of(villager).visibleTraders$setLockedTradeData(lockedTradeData.get());
     }
 

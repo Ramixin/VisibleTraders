@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Zombie.class)
 public class ZombieMixin {
 
-    @Inject(method = "method_63655", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/monster/zombie/ZombieVillager;setVillagerXp(I)V"))
-    private void transferTradesToZombieVillager(ServerLevel serverLevel, Villager villager, ZombieVillager zombieVillager, CallbackInfo ci) {
-        VillagerDuck.of(villager).visibleTraders$getLockedTradeData().ifPresent(data -> ZombieVillagerDuck.of(zombieVillager).visibleTraders$setLockedTradeData(data));
+    @Inject(method = "lambda$convertVillagerToZombieVillager$0", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/monster/zombie/ZombieVillager;setVillagerXp(I)V"))
+    private void transferTradesToZombieVillager(ServerLevel level, Villager villager, ZombieVillager zombie, CallbackInfo ci) {
+        VillagerDuck.of(villager).visibleTraders$getLockedTradeData().ifPresent(data -> ZombieVillagerDuck.of(zombie).visibleTraders$setLockedTradeData(data));
     }
 
 }

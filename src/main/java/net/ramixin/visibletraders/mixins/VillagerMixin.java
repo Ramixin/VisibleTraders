@@ -9,18 +9,15 @@ import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerData;
 import net.minecraft.world.entity.npc.villager.VillagerDataHolder;
-import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.ramixin.visibletraders.LockedTradeData;
 import net.ramixin.visibletraders.ducks.VillagerDuck;
-import net.ramixin.visibletraders.threading.FutureMerchantOffer;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -37,9 +34,6 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Shadow public abstract @NotNull VillagerData getVillagerData();
 
-    @Shadow
-    protected abstract void updateTrades(@NonNull ServerLevel serverLevel);
-
     @Unique
     private final Mutable<LockedTradeData> lockedTradeData = new MutableObject<>();
 
@@ -55,13 +49,13 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
-    private void saveLockedTradeData(ValueOutput valueOutput, CallbackInfo ci) {
-        ifPresent(data -> data.write(valueOutput));
+    private void saveLockedTradeData(ValueOutput output, CallbackInfo ci) {
+        ifPresent(data -> data.write(output));
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-    private void readLockedTradeData(ValueInput valueInput, CallbackInfo ci) {
-        lockedTradeData.setValue(LockedTradeData.constructOrNull(valueInput, this));
+    private void readLockedTradeData(ValueInput input, CallbackInfo ci) {
+        lockedTradeData.setValue(LockedTradeData.constructOrNull(input, this));
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
@@ -102,11 +96,11 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
         LockedTradeData data = lockedTradeData.get();
         Optional<MerchantOffers> maybeSoonOffers = data.peekTradeSet();
         if(maybeSoonOffers.isEmpty()) return false;
-        for(MerchantOffer offer : maybeSoonOffers.get()) {
-            if(offer instanceof FutureMerchantOffer futureOffer) {
-                if(!futureOffer.isFulfilled()) return true;
-            }
-        }
+//        for(MerchantOffer offer : maybeSoonOffers.get()) {
+//            if(offer instanceof FutureMerchantOffer futureOffer) {
+//                if(!futureOffer.isFulfilled()) return true;
+//            }
+//        }
         return false;
     }
 
@@ -145,9 +139,8 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Override
     public void visibleTraders$updateTrades() {
-        //noinspection resource
-        if(!(level() instanceof ServerLevel serverLevel))
+        if(!(level() instanceof ServerLevel level))
             return;
-        updateTrades(serverLevel);
+        updateTrades(level);
     }
 }

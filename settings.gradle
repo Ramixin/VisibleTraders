@@ -8,4 +8,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = "VisibleTraders-Fabric-Bleeding"
+rootProject.name = "VisibleTraders-Fabric-LTS"
+
