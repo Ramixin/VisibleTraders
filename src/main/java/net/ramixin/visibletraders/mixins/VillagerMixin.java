@@ -2,7 +2,6 @@ package net.ramixin.visibletraders.mixins;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ReputationEventHandler;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
@@ -135,12 +134,5 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
             visibleTrades$regenerateTrades();
         ifPresent(data -> offers.addAll(data.buildLockedOffers()));
         return offers;
-    }
-
-    @Override
-    public void visibleTraders$updateTrades() {
-        if(!(level() instanceof ServerLevel level))
-            return;
-        updateTrades(level);
     }
 }
