@@ -2,6 +2,7 @@ package net.ramixin.visibletraders.mixins;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ReputationEventHandler;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
@@ -78,9 +79,9 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
         if(this.offers == null) return false;
         AtomicBoolean result = new AtomicBoolean(false);
         ifPresent(data -> {
-            MerchantOffers dismissedTrades = data.popTradeSet();
-            if(dismissedTrades != null) {
-                this.offers.addAll(dismissedTrades);
+            Optional<MerchantOffers> dismissedTrades = data.popTradeSet();
+            if(dismissedTrades.isPresent()) {
+                this.offers.addAll(dismissedTrades.get());
                 result.set(true);
             }
         });
@@ -93,14 +94,7 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
         if(originalResult) return true;
         if(lockedTradeData.get() == null) return false;
         LockedTradeData data = lockedTradeData.get();
-        Optional<MerchantOffers> maybeSoonOffers = data.peekTradeSet();
-        if(maybeSoonOffers.isEmpty()) return false;
-//        for(MerchantOffer offer : maybeSoonOffers.get()) {
-//            if(offer instanceof FutureMerchantOffer futureOffer) {
-//                if(!futureOffer.isFulfilled()) return true;
-//            }
-//        }
-        return false;
+        return data.isGenerating();
     }
 
 
@@ -120,19 +114,17 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
     }
 
     @Override
-    public int visibleTraders$getShiftedLevel() {
-        int level = getVillagerData().level();
-        if(this.offers == null) return level;
-        return level | (this.offers.size() << 8);
+    public Optional<MerchantOffers> visibleTraders$getCondensedOffers() {
+        LockedTradeData data = lockedTradeData.get();
+        if(data == null) visibleTrades$regenerateTrades();
+        if(data == null) return Optional.empty();
+        MerchantOffers offers = data.buildLockedOffers();
+        if(offers.isEmpty()) return Optional.empty();
+        return Optional.of(offers);
     }
 
     @Override
-    public MerchantOffers visibleTraders$getCombinedOffers() {
-        MerchantOffers offers = new MerchantOffers();
-        offers.addAll(this.offers);
-        if(lockedTradeData.get() == null)
-            visibleTrades$regenerateTrades();
-        ifPresent(data -> offers.addAll(data.buildLockedOffers()));
-        return offers;
+    public void visibleTraders$requestOffers(ServerPlayer player) {
+        ifPresent(data -> data.requestOffers(player));
     }
 }

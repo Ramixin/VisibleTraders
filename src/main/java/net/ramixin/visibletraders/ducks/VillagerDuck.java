@@ -1,5 +1,6 @@
 package net.ramixin.visibletraders.ducks;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.ramixin.visibletraders.LockedTradeData;
@@ -18,7 +19,7 @@ public interface VillagerDuck {
 
     void visibleTrades$regenerateTrades();
 
-    MerchantOffers visibleTraders$getCombinedOffers();
+    Optional<MerchantOffers> visibleTraders$getCondensedOffers();
 
-    int visibleTraders$getShiftedLevel();
+    void visibleTraders$requestOffers(ServerPlayer player);
 }

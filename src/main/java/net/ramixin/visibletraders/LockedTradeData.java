@@ -1,7 +1,9 @@
 package net.ramixin.visibletraders;
 
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerData;
@@ -10,15 +12,17 @@ import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.ramixin.visibletraders.networking.ClientboundLockedTradesPayload;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class LockedTradeData {
 
-    private List<MerchantOffers> lockedOffers = new ArrayList<>();
+    private @NotNull List<MerchantOffers> lockedOffers = new ArrayList<>();
+    private final Queue<Consumer<MerchantOffers>> requestCallbacks = new LinkedList<>();
     private boolean activelyGenerating = false;
 
     public LockedTradeData(Villager villager) {
@@ -67,7 +71,6 @@ public class LockedTradeData {
     }
 
     public void write(ValueOutput output) {
-        if(this.lockedOffers == null) return;
         output.store("LockedOffers", MerchantOffers.CODEC.listOf(), this.lockedOffers);
     }
 
@@ -75,32 +78,34 @@ public class LockedTradeData {
         return this.lockedOffers.isEmpty();
     }
 
-    public MerchantOffers popTradeSet() {
-        if(this.lockedOffers == null || hasNoOffers()) return null;
-        return this.lockedOffers.removeFirst();
-    }
-
-    public Optional<MerchantOffers> peekTradeSet() {
-        if(this.lockedOffers.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(this.lockedOffers.getFirst());
+    public Optional<MerchantOffers> popTradeSet() {
+        if(hasNoOffers()) return Optional.empty();
+        return Optional.of(this.lockedOffers.removeFirst());
     }
 
     public MerchantOffers buildLockedOffers() {
         MerchantOffers lockedOffers = new MerchantOffers();
-        if(this.lockedOffers == null) return lockedOffers;
         for(MerchantOffers listOffers : this.lockedOffers) lockedOffers.addAll(listOffers);
         return lockedOffers;
     }
 
     public void tick(Villager villager, Runnable popCallback) {
-        if(this.lockedOffers == null) return;
         int requiredSets = 5 - villager.getVillagerData().level();
         while(requiredSets < this.lockedOffers.size()) popCallback.run();
         if(requiredSets > this.lockedOffers.size() && !activelyGenerating) {
             VisibleTraders.LOGGER.error("detected missing locked trade sets. Rebuilding locked offers");
             generateTrades(villager);
         }
+        while(!activelyGenerating && !requestCallbacks.isEmpty()) {
+            Objects.requireNonNull(requestCallbacks.poll()).accept(buildLockedOffers());
+        }
+    }
+
+    public void requestOffers(ServerPlayer player) {
+        requestCallbacks.add((offers) -> ServerPlayNetworking.send(player, new ClientboundLockedTradesPayload(offers)));
+    }
+
+    public boolean isGenerating() {
+        return activelyGenerating;
     }
 }

@@ -14,6 +14,14 @@
   "icon": "assets/visibletraders/icon.png",
   "environment": "*",
   "accessWidener": "visibletraders.accesswidener",
+  "entrypoints": {
+    "main": [
+      "net.ramixin.visibletraders.VisibleTraders"
+    ],
+    "client": [
+      "net.ramixin.visibletraders.client.VisibleTradersClient"
+    ]
+  },
   "mixins": [
     "visibletraders.mixins.json",
     {

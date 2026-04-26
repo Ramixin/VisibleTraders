@@ -1,13 +1,17 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.ramixin.visibletraders.mixins.client",
+  "package": "net.ramixin.visibletraders.client.mixins",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "MerchantScreenMixin"
+    "MerchantMenuMixin",
+    "MerchantScreenMixin",
+    "TradeOfferButtonMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
-  "mixinextras": {"minVersion": "0.5.0"}
+  "mixinextras": {
+    "minVersion": "0.5.0"
+  }
 }
