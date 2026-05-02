@@ -3,9 +3,11 @@ package net.ramixin.visibletraders.client;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.item.trading.MerchantOffers;
 
+import java.util.Optional;
+
 public interface ClientMerchantMenuDuck {
 
-    void visibleTraders$setLockedTradeOffers(MerchantOffers offers);
+    void visibleTraders$setLockedTradeOffers(Optional<MerchantOffers> maybeOffers);
 
     void visibleTraders$enableCombinedOffers();
 

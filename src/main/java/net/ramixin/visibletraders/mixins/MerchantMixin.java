@@ -26,10 +26,9 @@ public interface MerchantMixin {
         VillagerDuck duck = VillagerDuck.of(villager);
         Optional<MerchantOffers> maybeOffers = duck.visibleTraders$getCondensedOffers();
         if(maybeOffers.isPresent())
-            ServerPlayNetworking.send(serverPlayer, new ClientboundLockedTradesPayload(maybeOffers.orElseThrow()));
-        else {
+            ServerPlayNetworking.send(serverPlayer, new ClientboundLockedTradesPayload(maybeOffers));
+        else
             duck.visibleTraders$requestOffers(serverPlayer);
-        }
     }
 
 }

@@ -4,9 +4,6 @@
   "package": "net.ramixin.visibletraders.mixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ClientSideMerchantMixin",
-    "MerchantContainerMixin",
-    "MerchantMenuMixin",
     "MerchantMixin",
     "VillagerMixin",
     "ZombieMixin",

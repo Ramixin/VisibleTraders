@@ -13,6 +13,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
+import java.util.Optional;
+
 @Mixin(MerchantMenu.class)
 public abstract class MerchantMenuMixin implements ClientMerchantMenuDuck {
 
@@ -27,10 +29,10 @@ public abstract class MerchantMenuMixin implements ClientMerchantMenuDuck {
     private boolean useCombinedOffers = false;
 
     @Override
-    public void visibleTraders$setLockedTradeOffers(MerchantOffers offers) {
+    public void visibleTraders$setLockedTradeOffers(Optional<MerchantOffers> maybeOffers) {
         MerchantOffers combined = new MerchantOffers();
         combined.addAll(this.trader.getOffers());
-        combined.addAll(offers);
+        maybeOffers.ifPresent(combined::addAll);
         combinedOffers.setValue(combined);
     }
 

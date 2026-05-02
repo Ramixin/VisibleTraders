@@ -6,14 +6,30 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.ramixin.visibletraders.VisibleTraders;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-public record ClientboundLockedTradesPayload(MerchantOffers offers) implements CustomPacketPayload {
+import java.util.Optional;
+
+public record ClientboundLockedTradesPayload(Optional<MerchantOffers> offers) implements CustomPacketPayload {
 
     public static final Type<ClientboundLockedTradesPayload> PACKET_ID = new Type<>(VisibleTraders.id("locked_trades"));
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundLockedTradesPayload> PACKET_CODEC = StreamCodec.of(
-            (buf, payload) -> MerchantOffers.STREAM_CODEC.encode(buf, payload.offers()),
-            buf -> new ClientboundLockedTradesPayload(MerchantOffers.STREAM_CODEC.decode(buf))
+            (buf, payload) -> {
+                buf.writeBoolean(payload.offers().isPresent());
+                if(payload.offers().isEmpty())
+                    return;
+                MerchantOffers.STREAM_CODEC.encode(buf, payload.offers().get());
+            },
+            buf -> {
+                if(!buf.readBoolean())
+                    return new ClientboundLockedTradesPayload(Optional.empty());
+                return new ClientboundLockedTradesPayload(Optional.of(MerchantOffers.STREAM_CODEC.decode(buf)));
+            }
     );
+
+    public ClientboundLockedTradesPayload(@Nullable MerchantOffers offers) {
+        this(Optional.ofNullable(offers));
+    }
 
     @Override
     public @NonNull Type<? extends CustomPacketPayload> type() {

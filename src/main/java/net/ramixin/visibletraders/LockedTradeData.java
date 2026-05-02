@@ -83,7 +83,7 @@ public class LockedTradeData {
         return Optional.of(this.lockedOffers.removeFirst());
     }
 
-    public MerchantOffers buildLockedOffers() {
+    public MerchantOffers condense() {
         MerchantOffers lockedOffers = new MerchantOffers();
         for(MerchantOffers listOffers : this.lockedOffers) lockedOffers.addAll(listOffers);
         return lockedOffers;
@@ -97,7 +97,7 @@ public class LockedTradeData {
             generateTrades(villager);
         }
         while(!activelyGenerating && !requestCallbacks.isEmpty()) {
-            Objects.requireNonNull(requestCallbacks.poll()).accept(buildLockedOffers());
+            Objects.requireNonNull(requestCallbacks.poll()).accept(condense());
         }
     }
 

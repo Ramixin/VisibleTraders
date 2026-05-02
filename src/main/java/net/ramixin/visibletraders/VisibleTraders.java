@@ -16,6 +16,7 @@ public class VisibleTraders implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        LOGGER.info("Initializing (1/1)");
         PayloadTypeRegistry.clientboundPlay().register(ClientboundLockedTradesPayload.PACKET_ID, ClientboundLockedTradesPayload.PACKET_CODEC);
     }
 
