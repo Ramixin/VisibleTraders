@@ -1,4 +1,4 @@
-package net.ramixin.visibletraders.client.mixins;
+package net.ramixin.visibletraders.mixins.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -8,7 +8,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MerchantMenu;
-import net.ramixin.visibletraders.client.ClientMerchantMenuDuck;
+import net.ramixin.visibletraders.ducks.ClientMerchantMenuDuck;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

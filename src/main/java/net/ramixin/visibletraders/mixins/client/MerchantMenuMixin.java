@@ -1,10 +1,10 @@
-package net.ramixin.visibletraders.client.mixins;
+package net.ramixin.visibletraders.mixins.client;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffers;
-import net.ramixin.visibletraders.client.ClientMerchantMenuDuck;
+import net.ramixin.visibletraders.ducks.ClientMerchantMenuDuck;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.spongepowered.asm.mixin.Final;

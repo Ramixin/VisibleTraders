@@ -1,15 +1,23 @@
 {
+  "package": "net.ramixin.visibletraders.mixins",
   "required": true,
   "minVersion": "0.8",
-  "package": "net.ramixin.visibletraders.mixins",
-  "compatibilityLevel": "JAVA_21",
+  "mixinextras": {
+    "minVersion": "0.5.0"
+  },
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "client.MerchantMenuMixin",
+    "client.MerchantScreenMixin",
+    "client.TradeOfferButtonMixin"
+  ],
   "mixins": [
     "MerchantMixin",
     "VillagerMixin",
     "ZombieMixin",
     "ZombieVillagerMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+  ]
 }

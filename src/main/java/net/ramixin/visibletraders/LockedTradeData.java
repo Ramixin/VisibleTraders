@@ -1,6 +1,5 @@
 package net.ramixin.visibletraders;
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -65,7 +64,7 @@ public class LockedTradeData {
 
             this.lockedOffers = lockedOffers;
         } catch (Exception e) {
-            VisibleTraders.LOGGER.error("Error generating locked trades", e);
+            VisibleTradersCommon.LOGGER.error("Error generating locked trades", e);
         }
         activelyGenerating = false;
     }
@@ -93,7 +92,7 @@ public class LockedTradeData {
         int requiredSets = 5 - villager.getVillagerData().level();
         while(requiredSets < this.lockedOffers.size()) popCallback.run();
         if(requiredSets > this.lockedOffers.size() && !activelyGenerating) {
-            VisibleTraders.LOGGER.error("detected missing locked trade sets. Rebuilding locked offers");
+            VisibleTradersCommon.LOGGER.error("detected missing locked trade sets. Rebuilding locked offers");
             generateTrades(villager);
         }
         while(!activelyGenerating && !requestCallbacks.isEmpty()) {
@@ -102,7 +101,7 @@ public class LockedTradeData {
     }
 
     public void requestOffers(ServerPlayer player) {
-        requestCallbacks.add((offers) -> ServerPlayNetworking.send(player, new ClientboundLockedTradesPayload(offers)));
+        requestCallbacks.add((offers) -> VisibleTradersCommon.getMedium().sendPayload(player, new ClientboundLockedTradesPayload(offers)));
     }
 
     public boolean isGenerating() {

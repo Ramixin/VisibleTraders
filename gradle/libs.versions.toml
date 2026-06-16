@@ -1,0 +1,19 @@
+[versions]
+java = "25"
+minecraft = "26.1"
+fabric-loader = "0.19.2"
+neoforge = "26.1.0.19-beta"
+fabric-api = "0.145.1+26.1"
+
+[libraries]
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
+neoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
+fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
+
+[plugins]
+fabric-loom = { id = "net.fabricmc.fabric-loom", version = "1.17.0-alpha.12" }
+neogradle = { id = "net.neoforged.gradle.userdev", version = "7.1.27" }
+modstitch-multiloader = { id = "dev.isxander.mtk.multiloader", version = "0.1.6" }
+modstitch-manifests = { id = "dev.isxander.mtk.manifests", version = "0.1.3" }
+modstitch-accessx = { id = "dev.isxander.mtk.accessx", version = "0.1.1" }

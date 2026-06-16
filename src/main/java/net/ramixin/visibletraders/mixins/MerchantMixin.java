@@ -2,12 +2,12 @@ package net.ramixin.visibletraders.mixins;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffers;
+import net.ramixin.visibletraders.VisibleTradersCommon;
 import net.ramixin.visibletraders.ducks.VillagerDuck;
 import net.ramixin.visibletraders.networking.ClientboundLockedTradesPayload;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +26,7 @@ public interface MerchantMixin {
         VillagerDuck duck = VillagerDuck.of(villager);
         Optional<MerchantOffers> maybeOffers = duck.visibleTraders$getCondensedOffers();
         if(maybeOffers.isPresent())
-            ServerPlayNetworking.send(serverPlayer, new ClientboundLockedTradesPayload(maybeOffers));
+            VisibleTradersCommon.getMedium().sendPayload(serverPlayer, new ClientboundLockedTradesPayload(maybeOffers));
         else
             duck.visibleTraders$requestOffers(serverPlayer);
     }

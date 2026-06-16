@@ -4,7 +4,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.item.trading.MerchantOffers;
-import net.ramixin.visibletraders.VisibleTraders;
+import net.ramixin.visibletraders.VisibleTradersCommon;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public record ClientboundLockedTradesPayload(Optional<MerchantOffers> offers) implements CustomPacketPayload {
 
-    public static final Type<ClientboundLockedTradesPayload> PACKET_ID = new Type<>(VisibleTraders.id("locked_trades"));
+    public static final Type<ClientboundLockedTradesPayload> PACKET_ID = new Type<>(VisibleTradersCommon.id("locked_trades"));
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundLockedTradesPayload> PACKET_CODEC = StreamCodec.of(
             (buf, payload) -> {
                 buf.writeBoolean(payload.offers().isPresent());

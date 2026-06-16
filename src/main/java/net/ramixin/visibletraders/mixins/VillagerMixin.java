@@ -2,7 +2,6 @@ package net.ramixin.visibletraders.mixins;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ReputationEventHandler;
@@ -15,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.ramixin.visibletraders.LockedTradeData;
+import net.ramixin.visibletraders.VisibleTradersCommon;
 import net.ramixin.visibletraders.ducks.VillagerDuck;
 import net.ramixin.visibletraders.networking.ClientboundLockedTradesPayload;
 import org.apache.commons.lang3.mutable.Mutable;
@@ -129,7 +129,7 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
 
     @Override
     public void visibleTraders$requestOffers(ServerPlayer player) {
-        ServerPlayNetworking.send(player, new ClientboundLockedTradesPayload(Optional.empty()));
+        VisibleTradersCommon.getMedium().sendPayload(player, new ClientboundLockedTradesPayload(Optional.empty()));
         ifPresent(data -> data.requestOffers(player));
     }
 }
