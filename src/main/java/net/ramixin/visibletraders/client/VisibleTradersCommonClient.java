@@ -11,7 +11,7 @@ public class VisibleTradersCommonClient {
     public static void handleClientboundTradesPayload(ClientboundLockedTradesPayload payload) {
         LocalPlayer player = Minecraft.getInstance().player;
         if(player == null) return;
-        if(!(Minecraft.getInstance().screen instanceof MerchantScreen merchantScreen)) return;
+        if(!(Minecraft.getInstance().gui.screen() instanceof MerchantScreen merchantScreen)) return;
         ClientMerchantMenuDuck duck = ClientMerchantMenuDuck.of(merchantScreen.getMenu());
         duck.visibleTraders$setLockedTradeOffers(payload.offers());
     }
