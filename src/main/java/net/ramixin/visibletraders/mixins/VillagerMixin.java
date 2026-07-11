@@ -130,6 +130,8 @@ public abstract class VillagerMixin extends AbstractVillager implements Reputati
     @Override
     public void visibleTraders$requestOffers(ServerPlayer player) {
         VisibleTradersCommon.getMedium().sendPayload(player, new ClientboundLockedTradesPayload(Optional.empty()));
-        ifPresent(data -> data.requestOffers(player));
+        LockedTradeData data = lockedTradeData.get();
+        if(data != null)
+            data.requestOffers(player);
     }
 }
