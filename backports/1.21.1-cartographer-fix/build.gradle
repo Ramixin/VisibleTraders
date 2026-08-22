@@ -1,0 +1,34 @@
+plugins {
+    id 'fabric-loom' version '1.14.10'
+}
+
+version = '1.0.0'
+group = 'dev.idkwhodatis'
+
+base {
+    archivesName = 'visibletraders-cartographer-fix-patch'
+}
+
+repositories {
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    modImplementation "maven.modrinth:AhllI99f:${project.visible_traders_version}"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release.set(21)
+}
