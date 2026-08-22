@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "dev.idkwhodatis.visibletradersfix.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "FutureMerchantOfferMixin",
+    "LockedTradeDataMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
