@@ -11,6 +11,10 @@ public interface ClientMerchantMenuDuck {
 
     void visibleTraders$enableCombinedOffers();
 
+    void visibleTraders$beginCombinedOffersScope();
+
+    void visibleTraders$endCombinedOffersScope();
+
     static ClientMerchantMenuDuck of(MerchantMenu screen) {
         return (ClientMerchantMenuDuck) screen;
     }

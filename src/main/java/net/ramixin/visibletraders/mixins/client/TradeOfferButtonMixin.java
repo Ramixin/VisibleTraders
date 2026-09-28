@@ -1,22 +1,30 @@
 package net.ramixin.visibletraders.mixins.client;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
-import net.minecraft.world.inventory.MerchantMenu;
-import net.minecraft.world.item.trading.MerchantOffers;
 import net.ramixin.visibletraders.ducks.ClientMerchantMenuDuck;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(MerchantScreen.TradeOfferButton.class)
 public class TradeOfferButtonMixin {
 
-    @WrapOperation(method = "extractToolTip", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/MerchantMenu;getOffers()Lnet/minecraft/world/item/trading/MerchantOffers;"))
-    private MerchantOffers enabledCombinedOffersForMouseDragged(MerchantMenu instance, Operation<MerchantOffers> original) {
-        ClientMerchantMenuDuck duck = (ClientMerchantMenuDuck) instance;
-        duck.visibleTraders$enableCombinedOffers();
-        return original.call(instance);
+    @Shadow
+    @Final
+    private MerchantScreen this$0;
+
+    @WrapMethod(method = "extractToolTip")
+    private void useCombinedOffersWhileExtractingTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY, Operation<Void> original) {
+        ClientMerchantMenuDuck duck = (ClientMerchantMenuDuck) this.this$0.getMenu();
+        duck.visibleTraders$beginCombinedOffersScope();
+        try {
+            original.call(graphics, mouseX, mouseY);
+        } finally {
+            duck.visibleTraders$endCombinedOffersScope();
+        }
     }
 
 
